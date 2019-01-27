@@ -95,6 +95,9 @@ Copyright
 
 * Copyright Daniel Berthereau, 2019 (see [Daniel-KM] on GitHub)
 
+This project was supported in part by the University of California Office of the
+President MRPI funding MR-15-328710.
+
 
 [Amazon S3]: https://github.com/Daniel-KM/Omeka-S-module-AmazonS3
 [Omeka S]: https://omeka.org/s
@@ -109,6 +112,3 @@ Copyright
 [OSI]: http://opensource.org
 [MIT]: https://github.com/sandywalker/webui-popover/blob/master/LICENSE.txt
 [Daniel-KM]: https://github.com/Daniel-KM "Daniel Berthereau"
-
-This project was supported in part by the University of California Office of the
-President MRPI funding MR-15-328710.
