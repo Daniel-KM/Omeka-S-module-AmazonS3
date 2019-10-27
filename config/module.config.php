@@ -8,8 +8,8 @@ return [
         ],
     ],
     'form_elements' => [
-        'factories' => [
-            Form\ConfigForm::class => Service\Form\ConfigFormFactory::class,
+        'invokables' => [
+            Form\ConfigForm::class => Form\ConfigForm::class,
         ],
     ],
     'service_manager' => [
@@ -26,7 +26,6 @@ return [
             'amazons3_region' => 'us-east-2',
             'amazons3_bucket' => null,
             'amazons3_expiration' => null,
-
         ],
     ],
 ];

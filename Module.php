@@ -31,43 +31,42 @@
  */
 namespace AmazonS3;
 
+if (!class_exists(\Generic\AbstractModule::class)) {
+    require file_exists(dirname(__DIR__) . '/Generic/AbstractModule.php')
+        ? dirname(__DIR__) . '/Generic/AbstractModule.php'
+        : __DIR__ . '/src/Generic/AbstractModule.php';
+}
+
 use AmazonS3\File\Store\AwsS3;
-use AmazonS3\Form\ConfigForm;
+use Generic\AbstractModule;
 use Omeka\Module\Exception\ModuleCannotInstallException;
-use Omeka\Module\Manager as ModuleManager;
-use Omeka\Module\AbstractModule;
-use Omeka\Mvc\Controller\Plugin\Messenger;
 use Zend\Mvc\Controller\AbstractController;
 use Zend\Mvc\MvcEvent;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\View\Renderer\PhpRenderer;
 
 class Module extends AbstractModule
 {
-    public function getConfig()
-    {
-        return include __DIR__ . '/config/module.config.php';
-    }
+    const NAMESPACE = __NAMESPACE__;
 
     public function onBootstrap(MvcEvent $event)
     {
         parent::onBootstrap($event);
 
         /*
-         * override default File store alias to use Amazon S3 one instead
-         * Note: does not work from module config
+         * Override default File store alias to use Amazon S3 one instead.
+         * Note: does not work from module config (loaded alphabetically).
          */
         /** @var \Zend\ServiceManager\ServiceManager $serviceLocator */
         $serviceLocator = $this->getServiceLocator();
         $serviceLocator->setAlias('Omeka\File\Store', File\Store\AwsS3::class);
 
-        //override ArchiveRepertory File classes to work with Amazon S3
+        // Override ArchiveRepertory File classes to work with Amazon S3.
         if ($this->archiveRepertoryIsActive()) {
             $serviceLocator->setAlias('ArchiveRepertory\FileWriter', File\ArchiveRepertory\FileWriter::class);
             $serviceLocator->setAlias('ArchiveRepertory\FileManager', File\ArchiveRepertory\FileManager::class);
         }
 
-        //add autoloader for AWS SDK classes
+        // Add autoloader for AWS SDK classes.
         require_once __DIR__ . '/vendor/autoload.php';
     }
 
@@ -77,124 +76,56 @@ class Module extends AbstractModule
             $t = $serviceLocator->get('MvcTranslator');
             throw new ModuleCannotInstallException(
                 $t->translate('The AWS SDK library should be installed.') // @translate
-                . ' ' . $t->translate('See module’s installation documentation.') // @translate
+                    . ' ' . $t->translate('See module’s installation documentation.') // @translate
             );
         }
-
-        $settings = $serviceLocator->get('Omeka\Settings');
-        $this->manageSettings($settings, 'install');
-    }
-
-    public function uninstall(ServiceLocatorInterface $serviceLocator)
-    {
-        $settings = $serviceLocator->get('Omeka\Settings');
-        $this->manageSettings($settings, 'uninstall');
-    }
-
-    protected function manageSettings($settings, $process, $key = 'config')
-    {
-        $config = require __DIR__ . '/config/module.config.php';
-        $defaultSettings = $config[strtolower(__NAMESPACE__)][$key];
-        foreach ($defaultSettings as $name => $value) {
-            switch ($process) {
-                case 'install':
-                    $settings->set($name, $value);
-                    break;
-                case 'uninstall':
-                    $settings->delete($name);
-                    break;
-            }
-        }
-    }
-
-    public function upgrade($oldVersion, $newVersion, ServiceLocatorInterface $serviceLocator)
-    {
-        require_once 'data/scripts/upgrade.php';
-    }
-
-    public function getConfigForm(PhpRenderer $renderer)
-    {
-        $services = $this->getServiceLocator();
-        $config = $services->get('Config');
-        $settings = $services->get('Omeka\Settings');
-        $form = $services->get('FormElementManager')->get(ConfigForm::class);
-
-        $data = [];
-        $defaultSettings = $config[strtolower(__NAMESPACE__)]['config'];
-        foreach ($defaultSettings as $name => $value) {
-            $data[$name] = $settings->get($name, $value);
-        }
-
-        $form->init();
-        $form->setData($data);
-        $html = $renderer->render('amazons3/module/config', [
-            'form' => $form,
-        ]);
-
-        return $html;
+        parent::install($serviceLocator);
     }
 
     public function handleConfigForm(AbstractController $controller)
     {
-        $serviceLocator = $this->getServiceLocator();
-        $config = $serviceLocator->get('Config');
-        $settings = $serviceLocator->get('Omeka\Settings');
-        $form = $serviceLocator->get('FormElementManager')->get(ConfigForm::class);
-
-        $params = $controller->getRequest()->getPost();
-
-        $form->init();
-        $form->setData($params);
-        if (!$form->isValid()) {
-            $controller->messenger()->addErrors($form->getMessages());
+        $result = parent::handleConfigForm($controller);
+        if (!$result) {
             return false;
         }
 
-        $params = $form->getData();
-        $defaultSettings = $config[strtolower(__NAMESPACE__)]['config'];
-        $params = array_intersect_key($params, $defaultSettings);
-        foreach ($params as $name => $value) {
-            $settings->set($name, $value);
-        }
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
 
         /** @var File\Store\AwsS3 $store */
-        $store = $serviceLocator->get(File\Store\AwsS3::class);
+        $store = $services->get(File\Store\AwsS3::class);
 
-        //get all buckets and check client connection
+        // Get all buckets and check client connection.
         $buckets = $store->getBuckets();
         if ($buckets === false) {
-            $controller->messenger()->addErrors(['Wrong credentials. Unable to connect to Amazon S3 service.']);
+            $controller->messenger()->addErrors(['Wrong credentials. Unable to connect to Amazon S3 service.']); // @translate
             return false;
         }
 
         //check if specified bucket exists
         if (is_array($buckets) && !in_array($settings->get(AwsS3::OPTION_BUCKET), $buckets)) {
-            $controller->messenger()->addErrors([sprintf('Wrong bucket. Please specify an existing one, like: %s', implode(', ', array_slice($buckets, 0, 3)))]);
+            $controller->messenger()->addErrors([sprintf(
+                'Wrong bucket. Please specify an existing one, like: %s', // @translate
+                implode(', ', array_slice($buckets, 0, 3))
+            )]);
             return false;
         }
 
         $region = $store->determineBucketRegion();
         if ($region !== false && $region != $settings->get(AwsS3::OPTION_REGION)) {
-            $controller->messenger()->addErrors([sprintf('Wrong region. Please use region of a bucket: %s', $region)]);
+            $controller->messenger()->addErrors([sprintf(
+                'Wrong region. Please use region of a bucket: %s', // @translate
+                $region
+            )]);
             return false;
         }
-    }
-
-    protected function addError($msg)
-    {
-        $messenger = new Messenger;
-        $messenger->addError($msg);
     }
 
     protected function archiveRepertoryIsActive()
     {
         static $archiveRepertoryIsActive;
-
         if (is_null($archiveRepertoryIsActive)) {
-            $module = $this->getServiceLocator()
-                ->get('Omeka\ModuleManager')
-                ->getModule('ArchiveRepertory');
-            $archiveRepertoryIsActive = $module && $module->getState() === ModuleManager::STATE_ACTIVE;
+            $archiveRepertoryIsActive = $this->isModuleActive('ArchiveRepertory');
         }
         return $archiveRepertoryIsActive;
     }
