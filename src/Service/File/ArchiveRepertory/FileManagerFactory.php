@@ -1,10 +1,10 @@
 <?php
 namespace AmazonS3\Service\File\ArchiveRepertory;
 
-use ArchiveRepertory\Service\FileManagerFactory as ArchiveRepertoryFileManagerFactory;
 use AmazonS3\File\ArchiveRepertory\FileManager;
-use Interop\Container\ContainerInterface;
 use AmazonS3\File\Store\AwsS3;
+use ArchiveRepertory\Service\FileManagerFactory as ArchiveRepertoryFileManagerFactory;
+use Interop\Container\ContainerInterface;
 use Omeka\Service\Exception\ConfigException;
 
 class FileManagerFactory extends ArchiveRepertoryFileManagerFactory
@@ -14,19 +14,17 @@ class FileManagerFactory extends ArchiveRepertoryFileManagerFactory
         $config = $services->get('Config');
 
         if (!isset($config['thumbnails']['types'])) {
-            throw new ConfigException('Missing thumbnails configuration');
+            throw new ConfigException('Missing thumbnails configuration'); // @translate
         }
 
         if (!isset($config['archiverepertory']['ingesters'])) {
-            throw new ConfigException('Missing Archive Repertory ingesters configuration');
+            throw new ConfigException('Missing Archive Repertory ingesters configuration'); // @translate
         }
-
-        $thumbnailTypes = $config['thumbnails']['types'];
-
-        $ingesters = $config['archiverepertory']['ingesters'];
 
         $store = $services->get(AwsS3::class);
         $basePath = $store->getStreamWrapperObjectStoragePath();
+        $thumbnailTypes = $config['thumbnails']['types'];
+        $ingesters = $config['archiverepertory']['ingesters'];
 
         return new FileManager(
             $thumbnailTypes,

@@ -1,12 +1,10 @@
 <?php
 namespace AmazonS3\File\Store;
 
-use AmazonS3\Traits\ServiceLocatorAwareTrait;
 use Aws\Credentials\Credentials;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Omeka\File\Store\StoreInterface;
-use Omeka\File\Exception\ConfigException;
 use Omeka\File\Exception\RuntimeException;
 use Zend\Log\Logger;
 
@@ -15,8 +13,6 @@ use Zend\Log\Logger;
  */
 class AwsS3 implements StoreInterface
 {
-    use ServiceLocatorAwareTrait;
-
     const OPTION_AWS_KEY = 'amazons3_access_key_id';
     const OPTION_AWS_SECRET_KEY = 'amazons3_secret_access_key';
     const OPTION_REGION = 'amazons3_region';
@@ -25,39 +21,46 @@ class AwsS3 implements StoreInterface
 
     const STREAM_WRAPPER_NAME = 's3';
 
-    /** @var  Logger */
-    private $logger;
-    /** @var  S3Client */
-    private $client;
-    /** @var  string */
-    private $lastError;
+    /**
+     * @var Logger
+     */
+    protected $logger;
 
-    public function setUp()
+    /**
+     * @var S3Client
+     */
+    protected $client;
+
+    /**
+     * @var string
+     */
+    protected $bucket;
+
+    /**
+     * @var int
+     */
+    protected $expiration;
+
+    /**
+     * @var string
+     */
+    protected $lastError;
+
+    /**
+     * @param Logger $logger
+     * @param array $parameters
+     */
+    public function __construct(Logger $logger, array $parameters)
     {
-        $this->logger = $this->getServiceLocator()->get('Omeka\Logger');
+        $this->logger = $logger;
+        $this->bucket = $parameters['bucket'];
+        $this->expiration = $parameters['expiration'];
 
-        //get config
-        $settings = $this->getServiceLocator()->get('Omeka\Settings');
-        $awsRegion = $settings->get(self::OPTION_REGION, 'us-east-2');
-        $awsKey = $settings->get(self::OPTION_AWS_KEY);
-        $awsSecretKey = $settings->get(self::OPTION_AWS_SECRET_KEY);
-
-        if (empty($awsKey) || empty($awsSecretKey)) {
-            throw new ConfigException('You must specify your AWS access key and secret key to use the AWS S3 storage adapter.');
-        }
-
-        $bucket = $this->getBucketName();
-        if (empty($bucket)) {
-            throw new ConfigException('You must specify an S3 bucket name to use the AWS S3 storage adapter.');
-        }
-
-        //init client
         $this->client = new S3Client([
             'version' => 'latest',
-            'region' => $awsRegion,
-            'credentials' => new Credentials($awsKey, $awsSecretKey),
+            'region' => $parameters['region'],
+            'credentials' => new Credentials($parameters['key'], $parameters['secretKey']),
         ]);
-
         $this->client->registerStreamWrapper();
     }
 
@@ -67,6 +70,14 @@ class AwsS3 implements StoreInterface
     public function getLogger()
     {
         return $this->logger;
+    }
+
+    /**
+     * @return S3Client
+     */
+    public function getClient()
+    {
+        return $this->client;
     }
 
     /**
@@ -88,39 +99,26 @@ class AwsS3 implements StoreInterface
     }
 
     /**
-     * @return S3Client
-     */
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    /**
-     * Normalizes and returns the expiration time.
-     *
-     * Converts to integer and returns zero for all non-positive numbers.
-     *
      * @return int
      */
-    private function getExpiration()
+    protected function getExpiration()
     {
-        $settings = $this->getServiceLocator()->get('Omeka\Settings');
-        $expiration = (int) $settings->get(self::OPTION_EXPIRATION);
-        return $expiration > 0 ? $expiration : 0;
+        return $this->expiration;
     }
 
     /**
      * Get the name of the bucket files should be stored in.
+     *
      * @return string Bucket name
      */
-    private function getBucketName()
+    protected function getBucketName()
     {
-        $settings = $this->getServiceLocator()->get('Omeka\Settings');
-        return $settings->get(self::OPTION_BUCKET);
+        return $this->bucket;
     }
 
     /**
-     * Get path compatible with stream wrapper
+     * Get path compatible with stream wrapper.
+     *
      * @param $storagePath
      * @return string
      */
@@ -130,7 +128,8 @@ class AwsS3 implements StoreInterface
     }
 
     /**
-     * Check if provided bucket exists
+     * Check if provided bucket exists.
+     *
      * @return bool
      */
     public function canStore()
@@ -140,7 +139,8 @@ class AwsS3 implements StoreInterface
     }
 
     /**
-     * Determine Bucket Region
+     * Determine bucket region.
+     *
      * @return bool|mixed
      */
     public function determineBucketRegion()
@@ -155,7 +155,8 @@ class AwsS3 implements StoreInterface
     }
 
     /**
-     * Return list of available buckets or false on exception
+     * Return list of available buckets or false on exception.
+     *
      * @return array|bool
      */
     public function getBuckets()
@@ -189,7 +190,7 @@ class AwsS3 implements StoreInterface
             'SourceFile' => $source,
             'ACL' => 'public-read',
         ];
-        if (($expiration = $this->getExpiration())) {
+        if ($this->getExpiration()) {
             $args['ACL'] = 'private';
         }
 
@@ -197,11 +198,13 @@ class AwsS3 implements StoreInterface
             $this->getClient()->putObject($args);
         } catch (S3Exception $e) {
             throw new RuntimeException(
-                sprintf('Failed to copy "%s" to "%s" on bucket "%s". %s', $source, $storagePath, $bucket, $e->getMessage())
+                sprintf('Failed to copy "%s" to "%s" on bucket "%s". %s', $source, $storagePath, $bucket, $e->getMessage()) // @translate
             );
         }
 
-        $this->getLogger()->log(Logger::INFO, sprintf("%s: Stored '%s' as '%s' on bucket '%s'.", self::class, $source, $storagePath, $bucket));
+        $this->getLogger()->info(
+            sprintf("%s: Stored '%s' as '%s' on bucket '%s'.", self::class, $source, $storagePath, $bucket) // @translate
+        );
     }
 
     /**
@@ -220,7 +223,7 @@ class AwsS3 implements StoreInterface
             'DestinationKey' => $dest,
             'ACL' => 'public-read',
         ];
-        if (($expiration = $this->getExpiration())) {
+        if ($this->getExpiration()) {
             $args['ACL'] = 'private';
         }
 
@@ -232,15 +235,16 @@ class AwsS3 implements StoreInterface
             ]);
         } catch (S3Exception $e) {
             throw new RuntimeException(
-                sprintf('Failed to copy "%s" to "%s" on bucket "%s". %s', $source, $dest, $bucket, $e->getMessage())
+                sprintf('Failed to copy "%s" to "%s" on bucket "%s". %s', $source, $dest, $bucket, $e->getMessage()) // @translate
             );
         }
 
-        $this->getLogger()->log(Logger::INFO, sprintf("%s: Moved '%s' to '%s'.", self::class, $source, $dest));
+        $this->getLogger()->info(sprintf("%s: Moved '%s' to '%s'.", self::class, $source, $dest)); // @translate
     }
 
     /**
      * Remove a "stored" file.
+     *
      * @param string $storagePath
      */
     public function delete($storagePath)
@@ -249,7 +253,8 @@ class AwsS3 implements StoreInterface
 
         try {
             if (!$this->getClient()->doesObjectExist($bucket, $storagePath)) {
-                $this->getLogger()->log(Logger::WARN, sprintf("%s: Tried to delete missing object '%s'.", self::class, $storagePath));
+                $this->getLogger()->warn(
+                    sprintf("%s: Tried to delete missing object '%s'.", self::class, $storagePath)); // @translate
             }
             $this->getClient()->deleteObject([
                 'Bucket' => $bucket,
@@ -260,7 +265,7 @@ class AwsS3 implements StoreInterface
             throw new RuntimeException('Unable to delete file. '.$e->getMessage());
         }
 
-        $this->getLogger()->log(Logger::INFO, sprintf("%s: Removed object '%s'.", self::class, $storagePath));
+        $this->getLogger()->info(sprintf("%s: Removed object '%s'.", self::class, $storagePath)); // @translate
     }
 
     /**
@@ -277,7 +282,7 @@ class AwsS3 implements StoreInterface
 
         if (!$expiration) {
             $endpoint = $this->getClient()->getEndpoint();
-            $uri = $endpoint.'/'.$bucket.'/'.$path;
+            $uri = $endpoint . '/' . $bucket . '/' . $path;
         } else {
             $cmd = $this->getClient()->getCommand('GetObject', [
                 'Bucket' => $bucket,

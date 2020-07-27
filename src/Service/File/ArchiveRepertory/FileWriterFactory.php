@@ -2,9 +2,9 @@
 
 namespace AmazonS3\Service\File\ArchiveRepertory;
 
+use AmazonS3\File\ArchiveRepertory\FileWriter;
 use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\FactoryInterface;
-use AmazonS3\File\ArchiveRepertory\FileWriter;
 
 class FileWriterFactory implements FactoryInterface
 {
