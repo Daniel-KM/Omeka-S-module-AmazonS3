@@ -299,6 +299,26 @@ class AwsS3 implements StoreInterface
     }
 
     /**
+     * Check a "stored" file.
+     *
+     * This is not part of the Omeka storage api, but used in modules
+     * ImageServer and ArchiveRepertory.
+     *
+     * @param string $storagePath
+     */
+    public function hasFile($storagePath)
+    {
+        $bucket = $this->getBucketName();
+
+        try {
+            return $this->getClient()->doesObjectExist($bucket, $storagePath);
+        } catch (S3Exception $e) {
+            $this->setLastError($e->getMessage());
+            throw new RuntimeException('Unable to check file. ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Get a URI for a "stored" file.
      *
      * @see http://docs.amazonwebservices.com/AmazonS3/latest/dev/index.html?RESTAuthentication.html#RESTAuthenticationQueryStringAuth
