@@ -262,7 +262,37 @@ class AwsS3 implements StoreInterface
             ]);
         } catch (S3Exception $e) {
             $this->setLastError($e->getMessage());
-            throw new RuntimeException('Unable to delete file. '.$e->getMessage());
+            throw new RuntimeException('Unable to delete file. ' . $e->getMessage());
+        }
+
+        $this->getLogger()->info(sprintf("%s: Removed object '%s'.", self::class, $storagePath)); // @translate
+    }
+
+    /**
+     * Remove a "stored" directory.
+     *
+     * This is not part of the Omeka storage api, but used in modules
+     * ImageServer and ArchiveRepertory.
+     *
+     * @param string $storagePath
+     */
+    public function deleteDir($storagePath)
+    {
+        $bucket = $this->getBucketName();
+
+        $storagePathClean = trim($storagePath, '/');
+        $regex = '~^' . preg_quote($storagePathClean . '/', '~') . '~';
+        $storagePath = $storagePathClean;
+
+        try {
+            if (!$this->getClient()->doesObjectExist($bucket, $storagePath)) {
+                $this->getLogger()->warn(
+                    sprintf("%s: Tried to delete missing object '%s'.", self::class, $storagePath)); // @translate
+            }
+            $this->getClient()->deleteMatchingObjects($bucket, $storagePath, $regex);
+        } catch (S3Exception $e) {
+            $this->setLastError($e->getMessage());
+            throw new RuntimeException('Unable to delete file. ' . $e->getMessage());
         }
 
         $this->getLogger()->info(sprintf("%s: Removed object '%s'.", self::class, $storagePath)); // @translate

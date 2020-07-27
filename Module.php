@@ -4,7 +4,7 @@
  *
  * Files store that integrates with Amason S3.
  *
- * Copyright Daniel Berthereau 2019
+ * Copyright Daniel Berthereau 2019-2020
  *
  * This software is governed by the CeCILL license under French law and abiding
  * by the rules of distribution of free software.  You can use, modify and/ or
@@ -42,7 +42,6 @@ use Generic\AbstractModule;
 use Omeka\Module\Exception\ModuleCannotInstallException;
 use Zend\Mvc\Controller\AbstractController;
 use Zend\Mvc\MvcEvent;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 class Module extends AbstractModule
 {
@@ -70,16 +69,15 @@ class Module extends AbstractModule
         require_once __DIR__ . '/vendor/autoload.php';
     }
 
-    public function install(ServiceLocatorInterface $serviceLocator)
+    protected function preInstall()
     {
         if (!file_exists(__DIR__.'/vendor/autoload.php')) {
-            $t = $serviceLocator->get('MvcTranslator');
+            $t = $this->getServiceLocator()->get('MvcTranslator');
             throw new ModuleCannotInstallException(
                 $t->translate('The AWS SDK library should be installed.') // @translate
                     . ' ' . $t->translate('See module’s installation documentation.') // @translate
             );
         }
-        parent::install($serviceLocator);
     }
 
     public function handleConfigForm(AbstractController $controller)
