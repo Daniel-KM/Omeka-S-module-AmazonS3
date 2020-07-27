@@ -45,6 +45,12 @@ Simply config your credentials in the config page of the module.
 If module is active, it will replace default Local store class with S3 Storage.
 
 
+TODO
+----
+
+- Fill and use the config key `[file_store][awss3][base_uri]`.
+
+
 Warning
 -------
 
