@@ -51,27 +51,35 @@ class Module extends AbstractModule
     {
         parent::onBootstrap($event);
 
-        /*
-         * Override default File store alias to use Amazon S3 one instead.
-         * Note: does not work from module config (loaded alphabetically).
-         */
-        /** @var \Zend\ServiceManager\ServiceManager $serviceLocator */
-        $serviceLocator = $this->getServiceLocator();
-        $serviceLocator->setAlias('Omeka\File\Store', File\Store\AwsS3::class);
-
-        // Override ArchiveRepertory File classes to work with Amazon S3.
-        if ($this->archiveRepertoryIsActive()) {
-            $serviceLocator->setAlias('ArchiveRepertory\FileWriter', File\ArchiveRepertory\FileWriter::class);
-            $serviceLocator->setAlias('ArchiveRepertory\FileManager', File\ArchiveRepertory\FileManager::class);
-        }
-
         // Add autoloader for AWS SDK classes.
         require_once __DIR__ . '/vendor/autoload.php';
+
+        /** @var \Zend\ServiceManager\ServiceManager $services */
+        $services = $this->getServiceLocator();
+
+        // The alias is set in all cases, because the module is on. Else, the
+        // files will be silently saved locally.
+        $services->setAlias('Omeka\File\Store', File\Store\AwsS3::class);
+
+        try {
+            // The store is checked to avoid issue in this main piece of Omeka.
+            // Check here via a simple get, because this service is required in
+            // most of the cases.
+            $services->get(File\Store\AwsS3::class);
+        } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
+            $services->get('Omeka\Logger')->err($e->getMessage());
+        }
+
+        // Override ArchiveRepertory File classes to work with Amazon S3.
+        if ($this->isModuleActive('ArchiveRepertory')) {
+            $services->setAlias('ArchiveRepertory\FileWriter', File\ArchiveRepertory\FileWriter::class);
+            $services->setAlias('ArchiveRepertory\FileManager', File\ArchiveRepertory\FileManager::class);
+        }
     }
 
     protected function preInstall()
     {
-        if (!file_exists(__DIR__.'/vendor/autoload.php')) {
+        if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
             $t = $this->getServiceLocator()->get('MvcTranslator');
             throw new ModuleCannotInstallException(
                 $t->translate('The AWS SDK library should be installed.') // @translate
@@ -90,8 +98,12 @@ class Module extends AbstractModule
         $services = $this->getServiceLocator();
         $settings = $services->get('Omeka\Settings');
 
-        /** @var File\Store\AwsS3 $store */
-        $store = $services->get(File\Store\AwsS3::class);
+        try {
+            $store = $services->get(File\Store\AwsS3::class);
+        } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
+            $controller->messenger()->addErrors(['Wrong credentials. Unable to connect to Amazon S3 service.']); // @translate
+            return false;
+        }
 
         // Get all buckets and check client connection.
         $buckets = $store->getBuckets();
@@ -117,14 +129,5 @@ class Module extends AbstractModule
             )]);
             return false;
         }
-    }
-
-    protected function archiveRepertoryIsActive()
-    {
-        static $archiveRepertoryIsActive;
-        if (is_null($archiveRepertoryIsActive)) {
-            $archiveRepertoryIsActive = $this->isModuleActive('ArchiveRepertory');
-        }
-        return $archiveRepertoryIsActive;
     }
 }
