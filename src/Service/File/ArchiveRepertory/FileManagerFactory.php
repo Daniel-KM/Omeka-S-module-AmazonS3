@@ -21,6 +21,7 @@ class FileManagerFactory extends ArchiveRepertoryFileManagerFactory
             throw new ConfigException('Missing Archive Repertory ingesters configuration'); // @translate
         }
 
+        /** @var AwsS3 $store */
         $store = $services->get(AwsS3::class);
         $basePath = $store->getStreamWrapperObjectStoragePath();
         $thumbnailTypes = $config['thumbnails']['types'];

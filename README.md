@@ -27,13 +27,13 @@ If the module was installed from the source, rename the name of the folder of
 the module to `AmazonS3`, and go to the root of the module, and run:
 
 ```
-    composer install
+composer install --no-dev
 ```
 
 The next times:
 
 ```
-    composer update
+composer update --no-dev
 ```
 
 
@@ -45,10 +45,18 @@ Simply config your credentials in the config page of the module.
 If module is active, it will replace default Local store class with S3 Storage.
 
 
+Cors
+----
+
+To fix Amazon cors issues, see the [aws documentation].
+
+
 TODO
 ----
 
-- Fill and use the config key `[file_store][awss3][base_uri]`.
+- [ ] Fill and use the config key `[file_store][awss3][base_uri]`.
+- [ ] Allow to keep original url of Omeka (proxy via htaccess), to allow to
+  change backend without losing file urls (see [stackoverflow].
 
 
 Warning
@@ -111,6 +119,8 @@ President MRPI funding MR-15-328710.
 [Archive Repertory]: https://github.com/Daniel-KM/Omeka-S-module-ArchiveRepertory
 [`AmazonS3.zip`]: https://github.com/Daniel-KM/Omeka-S-module-AmazonS3/releases
 [installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
+[aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
+[stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
 [module issues]: https://github.com/Daniel-KM/Omeka-S-module-AmazonS3/issues
 [CeCILL v2.1]: https://www.cecill.info/licences/Licence_CeCILL_V2.1-en.html
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
