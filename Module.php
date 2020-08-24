@@ -39,9 +39,9 @@ if (!class_exists(\Generic\AbstractModule::class)) {
 
 use AmazonS3\File\Store\AwsS3;
 use Generic\AbstractModule;
+use Laminas\Mvc\Controller\AbstractController;
+use Laminas\Mvc\MvcEvent;
 use Omeka\Module\Exception\ModuleCannotInstallException;
-use Zend\Mvc\Controller\AbstractController;
-use Zend\Mvc\MvcEvent;
 
 class Module extends AbstractModule
 {
@@ -54,7 +54,7 @@ class Module extends AbstractModule
         // Add autoloader for AWS SDK classes.
         require_once __DIR__ . '/vendor/autoload.php';
 
-        /** @var \Zend\ServiceManager\ServiceManager $services */
+        /** @var \Laminas\ServiceManager\ServiceManager $services */
         $services = $this->getServiceLocator();
 
         // The alias is set in all cases, because the module is on. Else, the
@@ -66,7 +66,7 @@ class Module extends AbstractModule
             // Check here via a simple get, because this service is required in
             // most of the cases.
             $services->get(File\Store\AwsS3::class);
-        } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
+        } catch (\Laminas\ServiceManager\Exception\ServiceNotCreatedException $e) {
             $services->get('Omeka\Logger')->err($e->getMessage());
         }
 
@@ -100,7 +100,7 @@ class Module extends AbstractModule
 
         try {
             $store = $services->get(File\Store\AwsS3::class);
-        } catch (\Zend\ServiceManager\Exception\ServiceNotCreatedException $e) {
+        } catch (\Laminas\ServiceManager\Exception\ServiceNotCreatedException $e) {
             $controller->messenger()->addErrors(['Wrong credentials. Unable to connect to Amazon S3 service.']); // @translate
             return false;
         }
