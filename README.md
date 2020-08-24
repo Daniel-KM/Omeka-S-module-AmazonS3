@@ -1,11 +1,16 @@
 Amazon S3 (module for Omeka S)
 ==============================
 
+
+> __New versions of this module and support for Omeka S version 3.0 and above
+> are available on [GitLab], which seems to respect users and privacy better.__
+
+
 [Amazon S3] is a module for [Omeka S] that allows to store files via an external
 storage provider, Amazon S3.
 
 This module is compatible with [Archive Repertory], that allows to keep original
-filenames for the files managed by Omeka.
+filenames for the files managed by Omeka, and the [Image Server] used with [IIIF Server].
 
 
 Installation
@@ -18,7 +23,7 @@ install it, or use and init the source.
 
 * From the zip
 
-Download the last release [`AmazonS3.zip`] from the list of releases (the master
+Download the last release [AmazonS3.zip] from the list of releases (the master
 does not contain the dependency), and uncompress it in the `modules` directory.
 
 * From the source and for development:
@@ -71,7 +76,7 @@ your archives regularly so you can roll back if needed.
 Troubleshooting
 ---------------
 
-See online issues on the [module issues] page on GitHub.
+See online issues on the [module issues] page on GitLab.
 
 
 License
@@ -107,24 +112,27 @@ of the CeCILL license and that you accept its terms.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2019 (see [Daniel-KM] on GitHub)
+* Copyright Daniel Berthereau, 2019-2020 (see [Daniel-KM] on GitLab)
 
 This project was supported in part by the University of California Office of the
 President MRPI funding MR-15-328710.
 
 
-[Amazon S3]: https://github.com/Daniel-KM/Omeka-S-module-AmazonS3
+[Amazon S3]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3
 [Omeka S]: https://omeka.org/s
+[GitLab]: https://gitlab.com/Daniel-KM/Omeka-S-module-Generic
+[Image Server]: https://gitlab.com/Daniel-KM/Omeka-S-module-ImageServer
+[IIIF Server]: https://gitlab.com/Daniel-KM/Omeka-S-module-IiifServer
 [AWS SDK]: https://aws.amazon.com/sdk-for-php/
-[Archive Repertory]: https://github.com/Daniel-KM/Omeka-S-module-ArchiveRepertory
-[`AmazonS3.zip`]: https://github.com/Daniel-KM/Omeka-S-module-AmazonS3/releases
+[Archive Repertory]: https://gitlab.com/Daniel-KM/Omeka-S-module-ArchiveRepertory
+[AmazonS3.zip]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/releases
 [installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
 [aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
 [stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
-[module issues]: https://github.com/Daniel-KM/Omeka-S-module-AmazonS3/issues
+[module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/issues
 [CeCILL v2.1]: https://www.cecill.info/licences/Licence_CeCILL_V2.1-en.html
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
 [FSF]: https://www.fsf.org
 [OSI]: http://opensource.org
-[MIT]: https://github.com/sandywalker/webui-popover/blob/master/LICENSE.txt
-[Daniel-KM]: https://github.com/Daniel-KM "Daniel Berthereau"
+[MIT]: https://gitlab.com/sandywalker/webui-popover/blob/master/LICENSE.txt
+[Daniel-KM]: https://gitlab.com/Daniel-KM "Daniel Berthereau"
