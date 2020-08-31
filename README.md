@@ -125,7 +125,7 @@ President MRPI funding MR-15-328710.
 [IIIF Server]: https://gitlab.com/Daniel-KM/Omeka-S-module-IiifServer
 [AWS SDK]: https://aws.amazon.com/sdk-for-php/
 [Archive Repertory]: https://gitlab.com/Daniel-KM/Omeka-S-module-ArchiveRepertory
-[AmazonS3.zip]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/releases
+[AmazonS3.zip]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/releases
 [installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
 [aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
 [stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
