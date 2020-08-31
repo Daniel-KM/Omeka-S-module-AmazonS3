@@ -5,8 +5,8 @@ use Aws\Credentials\Credentials;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Laminas\Log\Logger;
-use Omeka\File\Store\StoreInterface;
 use Omeka\File\Exception\RuntimeException;
+use Omeka\File\Store\StoreInterface;
 
 /**
  * Cloud storage adapter for Amazon S3, using AWS SDK.
