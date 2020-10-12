@@ -82,7 +82,7 @@ See online issues on the [module issues] page on GitLab.
 License
 -------
 
-This module is published under the [CeCILL v2.1] licence, compatible with
+This module is published under the [CeCILL v2.1] license, compatible with
 [GNU/GPL] and approved by [FSF] and [OSI].
 
 This software is governed by the CeCILL license under French law and abiding by
@@ -120,7 +120,7 @@ President MRPI funding MR-15-328710.
 
 [Amazon S3]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3
 [Omeka S]: https://omeka.org/s
-[GitLab]: https://gitlab.com/Daniel-KM/Omeka-S-module-Generic
+[GitLab]: https://gitlab.com/Daniel-KM
 [Image Server]: https://gitlab.com/Daniel-KM/Omeka-S-module-ImageServer
 [IIIF Server]: https://gitlab.com/Daniel-KM/Omeka-S-module-IiifServer
 [AWS SDK]: https://aws.amazon.com/sdk-for-php/
