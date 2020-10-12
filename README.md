@@ -31,14 +31,8 @@ does not contain the dependency), and uncompress it in the `modules` directory.
 If the module was installed from the source, rename the name of the folder of
 the module to `AmazonS3`, and go to the root of the module, and run:
 
-```
+```sh
 composer install --no-dev
-```
-
-The next times:
-
-```
-composer update --no-dev
 ```
 
 
@@ -129,7 +123,7 @@ President MRPI funding MR-15-328710.
 [installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
 [aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
 [stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
-[module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/issues
+[module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues
 [CeCILL v2.1]: https://www.cecill.info/licences/Licence_CeCILL_V2.1-en.html
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
 [FSF]: https://www.fsf.org
