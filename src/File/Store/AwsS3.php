@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace AmazonS3\File\Store;
 
 use Aws\Credentials\Credentials;
@@ -181,7 +181,7 @@ class AwsS3 implements StoreInterface
      * @param string $source Local path to the file to store
      * @param string $storagePath Storage path to store at
      */
-    public function put($source, $storagePath)
+    public function put($source, $storagePath): void
     {
         $bucket = $this->getBucketName();
         $args = [
@@ -213,7 +213,7 @@ class AwsS3 implements StoreInterface
      * @param string $source Original stored path.
      * @param string $dest Destination stored path.
      */
-    public function move($source, $dest)
+    public function move($source, $dest): void
     {
         $bucket = $this->getBucketName();
         $args = [
@@ -247,7 +247,7 @@ class AwsS3 implements StoreInterface
      *
      * @param string $storagePath
      */
-    public function delete($storagePath)
+    public function delete($storagePath): void
     {
         $bucket = $this->getBucketName();
 
@@ -276,7 +276,7 @@ class AwsS3 implements StoreInterface
      *
      * @param string $storagePath
      */
-    public function deleteDir($storagePath)
+    public function deleteDir($storagePath): void
     {
         $bucket = $this->getBucketName();
 

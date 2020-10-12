@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace AmazonS3\Service\File\ArchiveRepertory;
 
 use AmazonS3\File\ArchiveRepertory\FileManager;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace AmazonS3\File\ArchiveRepertory;
 
 use ArchiveRepertory\File\FileManager as ArchiveRepertoryFileManager;
@@ -13,7 +13,7 @@ class FileManager extends ArchiveRepertoryFileManager
      *
      * @param string $archiveFolder Name of folder to delete, without files dir.
      */
-    public function removeArchiveFolders($archiveFolder)
+    public function removeArchiveFolders($archiveFolder): void
     {
         // Nothing to do.
     }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 namespace AmazonS3\Service\File\Store;
 
 use AmazonS3\File\Store\AwsS3;

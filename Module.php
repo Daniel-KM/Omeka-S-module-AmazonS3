@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * Amazon S3
  *
@@ -47,7 +47,7 @@ class Module extends AbstractModule
 {
     const NAMESPACE = __NAMESPACE__;
 
-    public function onBootstrap(MvcEvent $event)
+    public function onBootstrap(MvcEvent $event): void
     {
         parent::onBootstrap($event);
 
@@ -77,7 +77,7 @@ class Module extends AbstractModule
         }
     }
 
-    protected function preInstall()
+    protected function preInstall(): void
     {
         if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
             $t = $this->getServiceLocator()->get('MvcTranslator');
