@@ -223,17 +223,17 @@ abstract class AbstractModule extends \Omeka\Module\AbstractModule
         return true;
     }
 
-    public function handleMainSettings(Event $event): ?\Laminas\Form\Fieldset
+    public function handleMainSettings(Event $event): void
     {
-        return $this->handleAnySettings($event, 'settings');
+        $this->handleAnySettings($event, 'settings');
     }
 
-    public function handleSiteSettings(Event $event): ?\Laminas\Form\Fieldset
+    public function handleSiteSettings(Event $event): void
     {
-        return $this->handleAnySettings($event, 'site_settings');
+        $this->handleAnySettings($event, 'site_settings');
     }
 
-    public function handleUserSettings(Event $event): ?\Laminas\Form\Fieldset
+    public function handleUserSettings(Event $event): void
     {
         $services = $this->getServiceLocator();
         /** @var \Omeka\Mvc\Status $status */
@@ -242,11 +242,10 @@ abstract class AbstractModule extends \Omeka\Module\AbstractModule
             /** @var \Laminas\Router\Http\RouteMatch $routeMatch */
             $routeMatch = $status->getRouteMatch();
             if (!in_array($routeMatch->getParam('controller'), ['Omeka\Controller\Admin\User', 'user'])) {
-                return null;
+                return;
             }
-            return $this->handleAnySettings($event, 'user_settings');
+            $this->handleAnySettings($event, 'user_settings');
         }
-        return null;
     }
 
     /**
@@ -501,7 +500,10 @@ abstract class AbstractModule extends \Omeka\Module\AbstractModule
 
         $space = strtolower(static::NAMESPACE);
 
-        /** @var \Laminas\Form\Form $form */
+        /**
+         * @var \Laminas\Form\Fieldset $fieldset
+         * @var \Laminas\Form\Form $form
+         */
         $fieldset = $services->get('FormElementManager')->get($settingFieldsets[$settingsType]);
         $fieldset->setName($space);
         $form = $event->getTarget();
@@ -510,16 +512,20 @@ abstract class AbstractModule extends \Omeka\Module\AbstractModule
             // This process allows to save first level elements automatically.
             // @see \Omeka\Controller\Admin\UserController::editAction()
             $formFieldset = $form->get('user-settings');
+            foreach ($fieldset->getFieldsets() as $element) {
+                $formFieldset->add($element);
+            }
             foreach ($fieldset->getElements() as $element) {
                 $formFieldset->add($element);
             }
             $formFieldset->populateValues($data);
+            $fieldset = $formFieldset;
         } else {
             $form->add($fieldset);
             $form->get($space)->populateValues($data);
         }
 
-        return $form;
+        return $fieldset;
     }
 
     /**
