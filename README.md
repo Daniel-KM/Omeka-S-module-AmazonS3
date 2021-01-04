@@ -3,7 +3,8 @@ Amazon S3 (module for Omeka S)
 
 
 > __New versions of this module and support for Omeka S version 3.0 and above
-> are available on [GitLab], which seems to respect users and privacy better.__
+> are available on [GitLab], which seems to respect users and privacy better
+> than the previous repository.__
 
 
 [Amazon S3] is a module for [Omeka S] that allows to store files via an external
@@ -106,7 +107,7 @@ of the CeCILL license and that you accept its terms.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2019-2020 (see [Daniel-KM] on GitLab)
+* Copyright Daniel Berthereau, 2019-2021 (see [Daniel-KM] on GitLab)
 
 This project was supported in part by the University of California Office of the
 President MRPI funding MR-15-328710.
