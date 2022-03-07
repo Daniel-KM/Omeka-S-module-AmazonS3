@@ -44,6 +44,8 @@ Simply config your credentials in the config page of the module.
 
 If module is active, it will replace default Local store class with S3 Storage.
 
+In some cases, you need to adjust rights in s3: see [issue #2](https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues/2).
+
 
 Cors
 ----
@@ -107,7 +109,7 @@ of the CeCILL license and that you accept its terms.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2019-2021 (see [Daniel-KM] on GitLab)
+* Copyright Daniel Berthereau, 2019-2022 (see [Daniel-KM] on GitLab)
 
 This project was supported in part by the University of California Office of the
 President MRPI funding MR-15-328710.
