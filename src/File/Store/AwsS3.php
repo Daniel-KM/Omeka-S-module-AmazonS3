@@ -184,11 +184,13 @@ class AwsS3 implements StoreInterface
     public function put($source, $storagePath): void
     {
         $bucket = $this->getBucketName();
+        $mime = mime_content_type($source);
         $args = [
             'Bucket' => $bucket,
             'Key' => $storagePath,
             'SourceFile' => $source,
             'ACL' => 'public-read',
+            'ContentType' => $mime,
         ];
         if ($this->getExpiration()) {
             $args['ACL'] = 'private';
