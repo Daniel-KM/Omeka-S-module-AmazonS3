@@ -18,20 +18,20 @@ class FileManager extends ArchiveRepertoryFileManager
         // Nothing to do.
     }
 
-    protected function createArchiveFolders($archiveFolder, $pathFolder = '')
+    protected function createArchiveFolders($archiveFolder, $pathFolder = ''): bool
     {
         // No need to create directories in Amazon: they don't exist (but it is
         // possible to move and to remove them as prefix of files).
         return true;
     }
 
-    protected function createFolder($path)
+    protected function createFolder($path): bool
     {
         // No need to create directory in Amazon.
         return true;
     }
 
-    protected function moveFile($source, $destination, $path = '')
+    protected function moveFile($source, $destination, $path = ''): bool
     {
         $fileWriter = $this->getFileWriter();
         $realSource = $this->concatWithSeparator($path, $source);
