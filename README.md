@@ -109,7 +109,7 @@ of the CeCILL license and that you accept its terms.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2019-2022 (see [Daniel-KM] on GitLab)
+* Copyright Daniel Berthereau, 2019-2023 (see [Daniel-KM] on GitLab)
 
 This project was supported in part by the University of California Office of the
 President MRPI funding MR-15-328710.
@@ -123,7 +123,7 @@ President MRPI funding MR-15-328710.
 [AWS SDK]: https://aws.amazon.com/sdk-for-php/
 [Archive Repertory]: https://gitlab.com/Daniel-KM/Omeka-S-module-ArchiveRepertory
 [AmazonS3.zip]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/releases
-[installing a module]: http://dev.omeka.org/docs/s/user-manual/modules/#installing-modules
+[Installing a module]: https://omeka.org/s/docs/user-manual/modules/#installing-modules
 [aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
 [stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
 [module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues

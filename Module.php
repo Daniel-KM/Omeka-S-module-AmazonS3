@@ -4,7 +4,7 @@
  *
  * Files store that integrates with Amason S3.
  *
- * Copyright Daniel Berthereau 2019-2020
+ * Copyright Daniel Berthereau 2019-2023
  *
  * This software is governed by the CeCILL license under French law and abiding
  * by the rules of distribution of free software.  You can use, modify and/ or
