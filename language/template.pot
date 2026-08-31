@@ -1,0 +1,182 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 10:53+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: data/scripts/upgrade.php:23
+#, php-format
+msgid ""
+"The module %1$s should be installed and active: the secret access key is now "
+"encrypted at rest."
+msgstr ""
+
+#: data/scripts/upgrade.php:27
+msgid "Missing requirement. Unable to upgrade."
+msgstr ""
+
+#: data/scripts/upgrade.php:43
+#, php-format
+msgid ""
+"The secret access key is now encrypted at rest. Define the key \"%1$s\" in "
+"the file \"%2$s\" to enable it."
+msgstr ""
+
+#: Module.php:119
+msgid "The AWS SDK library should be installed."
+msgstr ""
+
+#: Module.php:120
+msgid "See module’s installation documentation."
+msgstr ""
+
+#: Module.php:111
+msgid "The module {module} should be upgraded to version {version} or later."
+msgstr ""
+
+#: Module.php:138
+msgid "Wrong credentials. Unable to connect to Amazon S3 service."
+msgstr ""
+
+#: Module.php:154
+#, php-format
+msgid "Wrong bucket. Please specify an existing one, like: %s"
+msgstr ""
+
+#: Module.php:159
+#, php-format
+msgid ""
+"Unable to access the bucket \"%1$s\". Check the credentials, the region and "
+"the rights of the user on this bucket. %2$s"
+msgstr ""
+
+#: Module.php:169
+#, php-format
+msgid "Wrong region. Please use region of a bucket: %s"
+msgstr ""
+
+#: src/Form/ConfigForm.php:17
+msgid "Access Key Id"
+msgstr ""
+
+#: src/Form/ConfigForm.php:18
+msgid ""
+"First part of access keys that grants programmatic access to your resources. "
+"Example: AKIAIOSFODNN7EXAMPLE"
+msgstr ""
+
+#: src/Form/ConfigForm.php:29
+msgid "Secret Access Key"
+msgstr ""
+
+#: src/Form/ConfigForm.php:30
+msgid ""
+"Second part of access keys that grants programmatic access to your "
+"resources. Example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+msgstr ""
+
+#: src/Form/ConfigForm.php:40
+msgid "Bucket"
+msgstr ""
+
+#: src/Form/ConfigForm.php:41
+msgid ""
+"Public cloud storage resource available in AWS S3, an object storage "
+"offering. Similar to file folders, store objects, which consist of data and "
+"its descriptive metadata."
+msgstr ""
+
+#: src/Form/ConfigForm.php:52
+msgid "Region"
+msgstr ""
+
+#: src/Form/ConfigForm.php:54
+#, php-format
+msgid "AWS S3 region. Navigate to %s for More info"
+msgstr ""
+
+#: src/Form/ConfigForm.php:67
+msgid "Expiration (minutes)"
+msgstr ""
+
+#: src/Form/ConfigForm.php:68
+msgid ""
+"If an expiration time is set and greater than zero, we’re uploading private "
+"files and using signed URLs. If not, we’re uploading public files."
+msgstr ""
+
+#: src/File/Store/AwsS3.php:220
+#, php-format
+msgid "Failed to copy \"%s\" to \"%s\" on bucket \"%s\". %s"
+msgstr ""
+
+#: src/File/Store/AwsS3.php:226
+#, php-format
+msgid "%s: Stored '%s' as '%s' on bucket '%s'."
+msgstr ""
+
+#: src/File/Store/AwsS3.php:279
+#, php-format
+msgid "Failed to move \"%s\" to \"%s\" on bucket \"%s\". %s"
+msgstr ""
+
+#: src/File/Store/AwsS3.php:284
+#, php-format
+msgid "%s: Moved '%s' to '%s'."
+msgstr ""
+
+#: src/File/Store/AwsS3.php:299 src/File/Store/AwsS3.php:334
+#, php-format
+msgid "%s: Tried to delete missing object '%s'."
+msgstr ""
+
+#: src/File/Store/AwsS3.php:307 src/File/Store/AwsS3.php:339
+#, php-format
+msgid "Failed to delete \"%s\" on bucket \"%s\". %s"
+msgstr ""
+
+#: src/File/Store/AwsS3.php:312 src/File/Store/AwsS3.php:344
+#, php-format
+msgid "%s: Removed object '%s'."
+msgstr ""
+
+#: src/File/Store/AwsS3.php:363
+#, php-format
+msgid "Failed to check \"%s\" on bucket \"%s\". %s"
+msgstr ""
+
+#: src/File/Store/AwsS3.php:416
+#, php-format
+msgid "Failed to sign the uri of \"%s\" on bucket \"%s\". %s"
+msgstr ""
+
+#: src/Service/File/ArchiveRepertory/FileManagerFactory.php:17
+msgid "Missing thumbnails configuration"
+msgstr ""
+
+#: src/Service/File/ArchiveRepertory/FileManagerFactory.php:21
+msgid "Missing Archive Repertory ingesters configuration"
+msgstr ""
+
+#: src/Service/File/Store/StoreFactory.php:34
+msgid ""
+"You must specify your AWS access key and secret key to use the AWS S3 "
+"storage adapter."
+msgstr ""
+
+#: src/Service/File/Store/StoreFactory.php:38
+msgid "You must specify an S3 bucket name to use the AWS S3 storage adapter."
+msgstr ""
