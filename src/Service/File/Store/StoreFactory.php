@@ -21,7 +21,10 @@ class StoreFactory implements FactoryInterface
         $settings = $services->get('Omeka\Settings');
         $parameters = [
             'key' => $settings->get(AwsS3::OPTION_AWS_KEY),
-            'secretKey' => $settings->get(AwsS3::OPTION_AWS_SECRET_KEY),
+            // The secret key is encrypted at rest since version 3.4.6; decrypt
+            // returns plain values as is, so older settings still work.
+            'secretKey' => $services->get('Omeka\Cipher')
+                ->decrypt((string) $settings->get(AwsS3::OPTION_AWS_SECRET_KEY)),
             'region' => $settings->get(AwsS3::OPTION_REGION, 'us-east-2'),
             'bucket' => $settings->get(AwsS3::OPTION_BUCKET),
             'expiration' => max(0, (int) $settings->get(AwsS3::OPTION_EXPIRATION, 0)),

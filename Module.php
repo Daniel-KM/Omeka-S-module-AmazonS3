@@ -38,9 +38,11 @@ if (!class_exists(\Generic\AbstractModule::class)) {
 }
 
 use AmazonS3\File\Store\AwsS3;
+use AmazonS3\Form\ConfigForm;
 use Generic\AbstractModule;
 use Laminas\Mvc\Controller\AbstractController;
 use Laminas\Mvc\MvcEvent;
+use Laminas\View\Renderer\PhpRenderer;
 use Omeka\Module\Exception\ModuleCannotInstallException;
 
 class Module extends AbstractModule
@@ -88,15 +90,64 @@ class Module extends AbstractModule
         }
     }
 
+    public function getConfigForm(PhpRenderer $renderer)
+    {
+        $html = parent::getConfigForm($renderer);
+        if (!$html) {
+            return $html;
+        }
+
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
+        $formManager = $services->get('FormElementManager');
+
+        // Generic populates the form from the settings, so the stored
+        // ciphertext would be echoed back. Render the form again with a blank
+        // secret and a placeholder when a value is already set.
+        $form = $formManager->get(ConfigForm::class);
+        $form->init();
+        $data = [];
+        foreach ($this->getConfig()['amazons3']['config'] as $name => $value) {
+            $data[$name] = $settings->get($name, $value);
+        }
+        $data[AwsS3::OPTION_AWS_SECRET_KEY] = '';
+        $form->setData($data);
+
+        $element = $form->get(AwsS3::OPTION_AWS_SECRET_KEY);
+        if ((string) $settings->get(AwsS3::OPTION_AWS_SECRET_KEY, '') !== '') {
+            $element->setOption('has_value', true);
+            $element->setAttribute('placeholder', $services->get('MvcTranslator')
+                ->translate('Leave empty to keep the current value')); // @translate
+        }
+
+        $form->prepare();
+        return $renderer->formCollection($form);
+    }
+
     public function handleConfigForm(AbstractController $controller)
     {
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
+        $post = $controller->getRequest()->getPost()->toArray();
+        $currentSecret = (string) $settings->get(AwsS3::OPTION_AWS_SECRET_KEY, '');
+
         $result = parent::handleConfigForm($controller);
         if (!$result) {
             return false;
         }
 
-        $services = $this->getServiceLocator();
-        $settings = $services->get('Omeka\Settings');
+        // Generic stores every submitted field as is, so restore the secret
+        // semantics: the "_remove" checkbox clears it, an empty submission
+        // keeps the current value, else the new value is encrypted at rest.
+        $submitted = (string) ($post[AwsS3::OPTION_AWS_SECRET_KEY] ?? '');
+        if (!empty($post[AwsS3::OPTION_AWS_SECRET_KEY . '_remove'])) {
+            $settings->set(AwsS3::OPTION_AWS_SECRET_KEY, '');
+        } elseif ($submitted === '') {
+            $settings->set(AwsS3::OPTION_AWS_SECRET_KEY, $currentSecret);
+        } else {
+            $settings->set(AwsS3::OPTION_AWS_SECRET_KEY,
+                $services->get('Omeka\Cipher')->encrypt($submitted));
+        }
 
         try {
             $store = $services->get(File\Store\AwsS3::class);

@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace AmazonS3\Form;
 
+use Common\Form\Element as CommonElement;
 use Laminas\Form\Element;
 use Laminas\Form\Form;
 
@@ -23,14 +24,13 @@ class ConfigForm extends Form
             ])
             ->add([
                 'name' => 'amazons3_secret_access_key',
-                'type' => Element\Text::class,
+                'type' => CommonElement\Secret::class,
                 'options' => [
                     'label' => 'Secret Access Key', // @translate
                     'info' => 'Second part of access keys that grants programmatic access to your resources. Example: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY', // @translate
                 ],
                 'attributes' => [
-                    'id' => 'amazons3_access_key_id',
-                    'required' => true,
+                    'id' => 'amazons3_secret_access_key',
                 ],
             ])
             ->add([
@@ -80,7 +80,8 @@ class ConfigForm extends Form
             ])
             ->add([
                 'name' => 'amazons3_secret_access_key',
-                'required' => true,
+                'required' => false,
+                'allow_empty' => true,
             ])
             ->add([
                 'name' => 'amazons3_bucket',
