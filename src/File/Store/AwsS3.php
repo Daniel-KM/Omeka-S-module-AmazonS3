@@ -334,7 +334,11 @@ class AwsS3 implements StoreInterface
 
         if (!$expiration) {
             $endpoint = $this->getClient()->getEndpoint();
-            $uri = $endpoint . '/' . $bucket . '/' . $path;
+            // Encode each segment: the storage id may contain spaces or utf-8
+            // characters (Archive Repertory modes other than "full"), that are
+            // not valid in a url. The separators "/" are kept as is.
+            $key = implode('/', array_map('rawurlencode', explode('/', (string) $path)));
+            $uri = $endpoint . '/' . $bucket . '/' . $key;
         } else {
             $cmd = $this->getClient()->getCommand('GetObject', [
                 'Bucket' => $bucket,
