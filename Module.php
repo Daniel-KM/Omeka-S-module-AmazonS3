@@ -31,6 +31,12 @@
  */
 namespace AmazonS3;
 
+// Load the module dependencies when installed as a zip.
+// With composer, libraries are stored in omeka vendor/ and the module has none.
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
 // Common may be installed but not registered in autoloader, in particular
 // during upgrade. So dynamically register all classes of the module.
 if (!defined('COMMON_PSR4_FALLBACK')) {
@@ -71,9 +77,6 @@ class Module extends AbstractModule
     public function onBootstrap(MvcEvent $event): void
     {
         parent::onBootstrap($event);
-
-        // Add autoloader for AWS SDK classes.
-        require_once __DIR__ . '/vendor/autoload.php';
 
         /** @var \Laminas\ServiceManager\ServiceManager $services */
         $services = $this->getServiceLocator();
