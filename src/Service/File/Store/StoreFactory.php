@@ -16,7 +16,7 @@ class StoreFactory implements FactoryInterface
      *
      * @return AwsS3
      */
-    public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $services, $requestedName, ?array $options = null)
     {
         $settings = $services->get('Omeka\Settings');
         $parameters = [

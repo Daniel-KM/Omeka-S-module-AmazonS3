@@ -9,7 +9,7 @@ use Omeka\Service\Exception\ConfigException;
 
 class FileManagerFactory extends ArchiveRepertoryFileManagerFactory
 {
-    public function __invoke(ContainerInterface $services, $requestedName, array $options = null)
+    public function __invoke(ContainerInterface $services, $requestedName, ?array $options = null)
     {
         $config = $services->get('Config');
 
