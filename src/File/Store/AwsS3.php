@@ -218,11 +218,14 @@ class AwsS3 implements StoreInterface
     public function move($source, $dest): void
     {
         $bucket = $this->getBucketName();
+        // The source of a copy is a single string "bucket/key", url-encoded
+        // segment by segment in order to keep the separators of the key.
+        $copySource = $bucket . '/' . implode('/', array_map('rawurlencode', explode('/', (string) $source)));
         $args = [
-            'SourceBucket' => $bucket,
-            'SourceKey' => $source,
-            'DestinationBucket' => $bucket,
-            'DestinationKey' => $dest,
+            'Bucket' => $bucket,
+            'Key' => $dest,
+            'CopySource' => $copySource,
+            'MetadataDirective' => 'COPY',
             'ACL' => 'public-read',
         ];
         if ($this->getExpiration()) {
