@@ -1,8 +1,47 @@
 {
+    "name": "daniel-km/omeka-s-module-amazon-s3",
+    "type": "omeka-s-module",
+    "description": "Module for Omeka S: Files store that integrates with Amazon S3.",
+    "keywords": [
+        "Omeka S",
+        "Omeka S module",
+        "amazon s3",
+        "storage",
+        "file system"
+    ],
+    "license": "CECILL-2.1",
+    "homepage": "https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3",
+    "authors": [
+        {
+            "name": "Daniel Berthereau",
+            "email": "Daniel.packagist@Berthereau.net"
+        }
+    ],
+    "support": {
+        "issues": "https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues",
+        "forum": "https://forum.omeka.org/"
+    },
+    "_require (not set until Omeka S merges PR #2412)": {
+        "omeka/omeka-s": "^3.0 || ^4.0"
+    },
     "require": {
         "aws/aws-sdk-php": "^3.257"
     },
-    "replace": {
+    "autoload": {
+        "psr-4": {
+            "AmazonS3\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AmazonS3Test\\": "tests/AmazonS3Test/"
+        }
+    },
+    "extra": {
+        "installer-name": "AmazonS3",
+        "configurable": true
+    },
+    "provide": {
         "symfony/polyfill-mbstring": "*"
     }
 }
