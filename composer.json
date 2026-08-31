@@ -21,7 +21,7 @@
         "issues": "https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues",
         "forum": "https://forum.omeka.org/"
     },
-    "_require (not set until Omeka S merges PR #2412)": {
+    "_require (not set until Omeka S merges PR #2432)": {
         "omeka/omeka-s": "^3.0 || ^4.0"
     },
     "require": {
@@ -37,11 +37,12 @@
             "AmazonS3Test\\": "tests/AmazonS3Test/"
         }
     },
-    "extra": {
-        "installer-name": "AmazonS3",
-        "configurable": true
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
     },
-    "provide": {
-        "symfony/polyfill-mbstring": "*"
+    "extra": {
+        "installer-name": "AmazonS3"
     }
 }
