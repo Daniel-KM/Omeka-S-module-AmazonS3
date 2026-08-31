@@ -47,14 +47,28 @@ class AwsS3 implements StoreInterface
     protected $lastError;
 
     /**
+     * Media type of each extension, built from the media type map of Omeka.
+     *
+     * @var array
+     */
+    protected $mediaTypesByExtension = [];
+
+    /**
      * @param Logger $logger
      * @param array $parameters
+     * @param array $mediaTypeMap Extensions of each media type.
      */
-    public function __construct(Logger $logger, array $parameters)
+    public function __construct(Logger $logger, array $parameters, array $mediaTypeMap = [])
     {
         $this->logger = $logger;
         $this->bucket = $parameters['bucket'];
         $this->expiration = $parameters['expiration'];
+
+        foreach ($mediaTypeMap as $mediaType => $extensions) {
+            foreach ($extensions as $extension) {
+                $this->mediaTypesByExtension[strtolower($extension)] ??= $mediaType;
+            }
+        }
 
         $this->client = new S3Client([
             'version' => 'latest',
@@ -184,13 +198,12 @@ class AwsS3 implements StoreInterface
     public function put($source, $storagePath): void
     {
         $bucket = $this->getBucketName();
-        $mime = mime_content_type($source);
         $args = [
             'Bucket' => $bucket,
             'Key' => $storagePath,
             'SourceFile' => $source,
             'ACL' => 'public-read',
-            'ContentType' => $mime,
+            'ContentType' => $this->mediaType($storagePath, $source),
         ];
         if ($this->getExpiration()) {
             $args['ACL'] = 'private';
@@ -207,6 +220,24 @@ class AwsS3 implements StoreInterface
         $this->getLogger()->info(
             sprintf("%s: Stored '%s' as '%s' on bucket '%s'.", self::class, $source, $storagePath, $bucket) // @translate
         );
+    }
+
+    /**
+     * Get the media type to store, according to the extension of the file.
+     *
+     * The extension of the stored path is the one that Omeka determined from
+     * the media, so it is more reliable than the detection done on the content
+     * of the file, that returns a generic type for csv, json, svg or the
+     * office formats.
+     *
+     * @param string $storagePath Storage path, with the extension of the media.
+     * @param string $source Local path, used as a fallback.
+     */
+    protected function mediaType($storagePath, $source): string
+    {
+        $extension = strtolower((string) pathinfo((string) $storagePath, PATHINFO_EXTENSION));
+        return $this->mediaTypesByExtension[$extension]
+            ?? (@mime_content_type($source) ?: 'application/octet-stream');
     }
 
     /**

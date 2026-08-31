@@ -37,7 +37,8 @@ class StoreFactory implements FactoryInterface
 
         return new AwsS3(
             $services->get('Omeka\Logger'),
-            $parameters
+            $parameters,
+            $services->get('Omeka\File\MediaTypeMap')
         );
     }
 }
