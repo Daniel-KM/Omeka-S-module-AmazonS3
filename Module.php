@@ -31,22 +31,41 @@
  */
 namespace AmazonS3;
 
-if (!class_exists('Generic\AbstractModule', false)) {
-    require file_exists(dirname(__DIR__) . '/Generic/AbstractModule.php')
-        ? dirname(__DIR__) . '/Generic/AbstractModule.php'
-        : __DIR__ . '/src/Generic/AbstractModule.php';
+// Common may be installed but not registered in autoloader, in particular
+// during upgrade. So dynamically register all classes of the module.
+if (!defined('COMMON_PSR4_FALLBACK')) {
+    foreach ([
+        OMEKA_PATH . '/modules/Common/src',
+        OMEKA_PATH . '/composer-addons/modules/Common/src',
+        dirname(__DIR__) . '/Common/src',
+    ] as $commonSrc) {
+        if (file_exists($commonSrc . '/TraitModule.php')) {
+            define('COMMON_PSR4_FALLBACK', $commonSrc);
+            spl_autoload_register(static function ($class): void {
+                if (str_starts_with($class, 'Common\\')) {
+                    $file = COMMON_PSR4_FALLBACK . '/' . strtr(substr($class, 7), '\\', '/') . '.php';
+                    if (file_exists($file)) {
+                        require_once $file;
+                    }
+                }
+            });
+            break;
+        }
+    }
 }
 
 use AmazonS3\File\Store\AwsS3;
-use AmazonS3\Form\ConfigForm;
-use Generic\AbstractModule;
+use Common\Stdlib\PsrMessage;
+use Common\TraitModule;
 use Laminas\Mvc\Controller\AbstractController;
 use Laminas\Mvc\MvcEvent;
-use Laminas\View\Renderer\PhpRenderer;
+use Omeka\Module\AbstractModule;
 use Omeka\Module\Exception\ModuleCannotInstallException;
 
 class Module extends AbstractModule
 {
+    use TraitModule;
+
     const NAMESPACE = __NAMESPACE__;
 
     public function onBootstrap(MvcEvent $event): void
@@ -81,73 +100,34 @@ class Module extends AbstractModule
 
     protected function preInstall(): void
     {
+        $services = $this->getServiceLocator();
+        $translator = $services->get('MvcTranslator');
+
+        if (!method_exists($this, 'checkModuleActiveVersion') || !$this->checkModuleActiveVersion('Common', '3.4.91')) {
+            $message = new PsrMessage(
+                'The module {module} should be upgraded to version {version} or later.', // @translate
+                ['module' => 'Common', 'version' => '3.4.91']
+            );
+            throw new ModuleCannotInstallException((string) $message->setTranslator($translator));
+        }
+
         if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
-            $t = $this->getServiceLocator()->get('MvcTranslator');
             throw new ModuleCannotInstallException(
-                $t->translate('The AWS SDK library should be installed.') // @translate
-                    . ' ' . $t->translate('See module’s installation documentation.') // @translate
+                $translator->translate('The AWS SDK library should be installed.') // @translate
+                    . ' ' . $translator->translate('See module’s installation documentation.') // @translate
             );
         }
     }
 
-    public function getConfigForm(PhpRenderer $renderer)
-    {
-        $html = parent::getConfigForm($renderer);
-        if (!$html) {
-            return $html;
-        }
-
-        $services = $this->getServiceLocator();
-        $settings = $services->get('Omeka\Settings');
-        $formManager = $services->get('FormElementManager');
-
-        // Generic populates the form from the settings, so the stored
-        // ciphertext would be echoed back. Render the form again with a blank
-        // secret and a placeholder when a value is already set.
-        $form = $formManager->get(ConfigForm::class);
-        $form->init();
-        $data = [];
-        foreach ($this->getConfig()['amazons3']['config'] as $name => $value) {
-            $data[$name] = $settings->get($name, $value);
-        }
-        $data[AwsS3::OPTION_AWS_SECRET_KEY] = '';
-        $form->setData($data);
-
-        $element = $form->get(AwsS3::OPTION_AWS_SECRET_KEY);
-        if ((string) $settings->get(AwsS3::OPTION_AWS_SECRET_KEY, '') !== '') {
-            $element->setOption('has_value', true);
-            $element->setAttribute('placeholder', $services->get('MvcTranslator')
-                ->translate('Leave empty to keep the current value')); // @translate
-        }
-
-        $form->prepare();
-        return $renderer->formCollection($form);
-    }
-
     public function handleConfigForm(AbstractController $controller)
     {
-        $services = $this->getServiceLocator();
-        $settings = $services->get('Omeka\Settings');
-        $post = $controller->getRequest()->getPost()->toArray();
-        $currentSecret = (string) $settings->get(AwsS3::OPTION_AWS_SECRET_KEY, '');
-
-        $result = parent::handleConfigForm($controller);
+        $result = $this->handleConfigFormAuto($controller);
         if (!$result) {
             return false;
         }
 
-        // Generic stores every submitted field as is, so restore the secret
-        // semantics: the "_remove" checkbox clears it, an empty submission
-        // keeps the current value, else the new value is encrypted at rest.
-        $submitted = (string) ($post[AwsS3::OPTION_AWS_SECRET_KEY] ?? '');
-        if (!empty($post[AwsS3::OPTION_AWS_SECRET_KEY . '_remove'])) {
-            $settings->set(AwsS3::OPTION_AWS_SECRET_KEY, '');
-        } elseif ($submitted === '') {
-            $settings->set(AwsS3::OPTION_AWS_SECRET_KEY, $currentSecret);
-        } else {
-            $settings->set(AwsS3::OPTION_AWS_SECRET_KEY,
-                $services->get('Omeka\Cipher')->encrypt($submitted));
-        }
+        $services = $this->getServiceLocator();
+        $settings = $services->get('Omeka\Settings');
 
         try {
             $store = $services->get(File\Store\AwsS3::class);
@@ -188,5 +168,7 @@ class Module extends AbstractModule
             )]);
             return false;
         }
+
+        return true;
     }
 }
