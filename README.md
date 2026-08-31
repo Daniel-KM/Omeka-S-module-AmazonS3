@@ -130,7 +130,7 @@ President MRPI funding MR-15-328710.
 [installing a module]: https://omeka.org/s/docs/user-manual/modules/#installing-modules
 [aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
 [stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
-[module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues
+[module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/work_items
 [CeCILL v2.1]: https://www.cecill.info/licences/Licence_CeCILL_V2.1-en.html
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
 [FSF]: https://www.fsf.org
