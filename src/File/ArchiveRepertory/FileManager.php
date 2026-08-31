@@ -30,41 +30,4 @@ class FileManager extends ArchiveRepertoryFileManager
         // No need to create directory in Amazon.
         return true;
     }
-
-    protected function moveFile($source, $destination, $path = ''): bool
-    {
-        $fileWriter = $this->getFileWriter();
-        $realSource = $this->concatWithSeparator($path, $source);
-        $realDestination = $this->concatWithSeparator($path, $destination);
-        if ($fileWriter->fileExists($realDestination)) {
-            return true;
-        }
-
-        if (!$fileWriter->fileExists($realSource)) {
-            $msg = sprintf(
-                $this->translate('Error during move of a file from "%s" to "%s" (local dir: "%s"): source does not exist.'),
-                $source,
-                $destination,
-                $path
-            );
-            $this->addError($msg);
-            return false;
-        }
-
-        try {
-            // No need to create directory in Amazon.
-            $result = $fileWriter->rename($realSource, $realDestination);
-        } catch (\Exception $e) {
-            $msg = sprintf(
-                $this->translate('Error during move of a file from "%s" to "%s" (local dir: "%s").'),
-                $source,
-                $destination,
-                $path
-            );
-            $this->addError($msg);
-            return false;
-        }
-
-        return $result;
-    }
 }

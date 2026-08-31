@@ -28,10 +28,14 @@ class FileManagerFactory extends ArchiveRepertoryFileManagerFactory
         $ingesters = $config['archiverepertory']['ingesters'];
 
         return new FileManager(
-            $thumbnailTypes,
+            $services->get('ArchiveRepertory\FileWriter'),
+            $services->get('ControllerPluginManager')->get('messenger'),
+            $services->get('Omeka\Settings'),
+            $services->get('MvcTranslator'),
+            $services->get('Omeka\Logger'),
             $basePath,
             $ingesters,
-            $services
+            $thumbnailTypes
         );
     }
 }
