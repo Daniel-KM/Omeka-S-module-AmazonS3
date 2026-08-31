@@ -3,7 +3,7 @@
 namespace AmazonS3\Service\File\ArchiveRepertory;
 
 use AmazonS3\File\ArchiveRepertory\FileWriter;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 
 class FileWriterFactory implements FactoryInterface

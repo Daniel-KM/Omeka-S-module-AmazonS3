@@ -2,7 +2,7 @@
 namespace AmazonS3\Service\File\Store;
 
 use AmazonS3\File\Store\AwsS3;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Omeka\File\Exception\ConfigException;
 
