@@ -105,10 +105,15 @@ class Module extends AbstractModule
             return false;
         }
 
-        // Get all buckets and check client connection.
+        // Get all buckets and check client connection. Listing the buckets
+        // requires the permission "s3:ListAllMyBuckets" on all the buckets,
+        // not only the one used by Omeka, so the real error is displayed.
         $buckets = $store->getBuckets();
         if ($buckets === false) {
-            $controller->messenger()->addErrors(['Wrong credentials. Unable to connect to Amazon S3 service.']); // @translate
+            $controller->messenger()->addErrors([sprintf(
+                'Unable to list the buckets, so the credentials cannot be checked. The user may miss the permission "s3:ListAllMyBuckets". %s', // @translate
+                $store->getLastError()
+            )]);
             return false;
         }
 
