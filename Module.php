@@ -105,24 +105,27 @@ class Module extends AbstractModule
             return false;
         }
 
-        // Get all buckets and check client connection. Listing the buckets
-        // requires the permission "s3:ListAllMyBuckets" on all the buckets,
-        // not only the one used by Omeka, so the real error is displayed.
-        $buckets = $store->getBuckets();
-        if ($buckets === false) {
-            $controller->messenger()->addErrors([sprintf(
-                'Unable to list the buckets, so the credentials cannot be checked. The user may miss the permission "s3:ListAllMyBuckets". %s', // @translate
-                $store->getLastError()
-            )]);
-            return false;
-        }
-
-        //check if specified bucket exists
-        if (is_array($buckets) && !in_array($settings->get(AwsS3::OPTION_BUCKET), $buckets)) {
-            $controller->messenger()->addErrors([sprintf(
-                'Wrong bucket. Please specify an existing one, like: %s', // @translate
-                implode(', ', array_slice($buckets, 0, 3))
-            )]);
+        // Check the bucket that is really used, and not the list of all the
+        // buckets: listing them requires the permission "s3:ListAllMyBuckets"
+        // on all the buckets, that a user dedicated to Omeka rarely has.
+        if (!$store->canStore()) {
+            $bucket = (string) $settings->get(AwsS3::OPTION_BUCKET);
+            // Keep the error of the bucket: listing the buckets replaces it.
+            $error = (string) $store->getLastError();
+            // The list of the buckets is only used to help the user, when it
+            // is available, so it never makes the config fail by itself.
+            $buckets = $store->getBuckets();
+            if (is_array($buckets) && $buckets && !in_array($bucket, $buckets)) {
+                $controller->messenger()->addErrors([sprintf(
+                    'Wrong bucket. Please specify an existing one, like: %s', // @translate
+                    implode(', ', array_slice($buckets, 0, 3))
+                )]);
+            } else {
+                $controller->messenger()->addErrors([sprintf(
+                    'Unable to access the bucket "%1$s". Check the credentials, the region and the rights of the user on this bucket. %2$s', // @translate
+                    $bucket, $error
+                )]);
+            }
             return false;
         }
 
