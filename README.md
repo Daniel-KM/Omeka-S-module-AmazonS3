@@ -13,6 +13,10 @@ storage provider, Amazon S3.
 This module is compatible with [Archive Repertory], that allows to keep original
 filenames for the files managed by Omeka, and the [Image Server] used with [IIIF Server].
 
+When used with [Archive Repertory], the version 3.15.17 or above is required:
+the module overrides its file manager, whose constructor changed in that
+version.
+
 
 Installation
 ------------
@@ -109,7 +113,7 @@ of the CeCILL license and that you accept its terms.
 Copyright
 ---------
 
-* Copyright Daniel Berthereau, 2019-2023 (see [Daniel-KM] on GitLab)
+* Copyright Daniel Berthereau, 2019-2026 (see [Daniel-KM] on GitLab)
 
 This project was supported in part by the University of California Office of the
 President MRPI funding MR-15-328710.
@@ -123,7 +127,7 @@ President MRPI funding MR-15-328710.
 [AWS SDK]: https://aws.amazon.com/sdk-for-php/
 [Archive Repertory]: https://gitlab.com/Daniel-KM/Omeka-S-module-ArchiveRepertory
 [AmazonS3.zip]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/releases
-[Installing a module]: https://omeka.org/s/docs/user-manual/modules/#installing-modules
+[installing a module]: https://omeka.org/s/docs/user-manual/modules/#installing-modules
 [aws documentation]: https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html
 [stackoverflow]: https://stackoverflow.com/questions/14095818/amazon-s3-and-htaccess#answer-14095923
 [module issues]: https://gitlab.com/Daniel-KM/Omeka-S-module-AmazonS3/-/issues
@@ -131,5 +135,4 @@ President MRPI funding MR-15-328710.
 [GNU/GPL]: https://www.gnu.org/licenses/gpl-3.0.html
 [FSF]: https://www.fsf.org
 [OSI]: http://opensource.org
-[MIT]: https://gitlab.com/sandywalker/webui-popover/blob/master/LICENSE.txt
 [Daniel-KM]: https://gitlab.com/Daniel-KM "Daniel Berthereau"
